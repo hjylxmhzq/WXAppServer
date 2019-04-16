@@ -1,0 +1,21 @@
+{
+  "name": "wxappserver",
+  "version": "0.0.1",
+  "description": "weixin app server",
+  "main": "server.js",
+  "dependencies": {
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "mime": "^2.4.2",
+    "mongodb": "^3.2.3",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
