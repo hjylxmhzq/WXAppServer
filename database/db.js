@@ -1,5 +1,5 @@
 let MongoClient = require('mongodb').MongoClient;
-let config = require('./config')
+let config = require('./config');
 
 module.exports = {
     getDB() {
@@ -12,8 +12,8 @@ module.exports = {
                 } else {
                     resolve(client);
                 }
-            })
-        })
+            });
+        });
     },
     insertDB(db, collection, obj) {
         return new Promise((resolve, reject) => {
@@ -23,8 +23,8 @@ module.exports = {
                 } else {
                     resolve(res);
                 }
-            })
-        })
+            });
+        });
     },
     queryDB(db, collection, queryObj) {
         return new Promise((resolve, reject) => {
@@ -34,7 +34,7 @@ module.exports = {
                 } else {
                     resolve(data);
                 }
-            })
-        })
+            });
+        });
     }
 }

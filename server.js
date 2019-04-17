@@ -25,7 +25,7 @@ cookieConfig = {
     expires: new Date(86400000 + (new Date()).valueOf()), // cookie失效时间
     httpOnly: false, // 是否只用于http请求中获取
     overwrite: false // 是否允许重写
-}
+};
 
 function getWXUserInfo(jsCode) {
     let url = `https://api.weixin.qq.com/sns/jscode2session?appid=${APP_ID}&secret=${APP_SECRET}&js_code=${jsCode}&grant_type=authorization_code`;
@@ -39,7 +39,7 @@ function getWXUserInfo(jsCode) {
                 resolve(body);
             }
         });
-    })
+    });
 }
 //app.use(static(path.join(__dirname, staticPath)))
 
@@ -53,7 +53,7 @@ app.use(async (ctx, next) => { //登陆操作
     if (ctx.path === '/login' && ctx.method === 'GET') {
         //console.log(ctx.query['code'])
         if (ctx.query['code']) {
-            result = await getWXUserInfo(ctx.query['code'])
+            result = await getWXUserInfo(ctx.query['code']);
         }
         if (!result['openid']) {
             console.log('get user id error');
@@ -61,14 +61,14 @@ app.use(async (ctx, next) => { //登陆操作
         } else {
             console.log(result);
             let openId = result['openid'];
-            session.set(openId, result['session_key'])
+            session.set(openId, result['session_key']);
             ctx.body = `{"session_id": "${openId}"}`;
             ctx.type = 'application/json';
         }
     } else {
         await next();
     }
-})
+});
 
 app.use(async (ctx, next) => {
     let sessId = ctx.cookies.get('app:sess');
@@ -81,10 +81,10 @@ app.use(async (ctx, next) => {
 
 router.get('/query/:dataName', async (ctx, next) => {
     let client = await dbm.getDB();
-    let dbo = client.db(dbConfig.dbName)
+    let dbo = client.db(dbConfig.dbName);
     let result = await dbm.queryDB(dbo, 'visualDataSet', {
         'title': ctx.params.dataName
-    })
+    });
     client.close();
     ctx.type = 'application/json';
     ctx.body = JSON.stringify(result);
@@ -95,4 +95,4 @@ router.get('/query/:dataName', async (ctx, next) => {
 app.use(router.routes());
 
 app.listen(config.webport);
-console.log(`server is listening on port ${config.webport}`)
+console.log(`server is listening on port ${config.webport}`);
