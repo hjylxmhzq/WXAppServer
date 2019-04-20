@@ -4,6 +4,7 @@
   "description": "weixin app server",
   "main": "server.js",
   "dependencies": {
+    "cross-env": "^5.2.0",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
@@ -13,8 +14,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "node server.js",
-    "start": "node server.js"
+    "test": "npx cross-env NODE_ENV=development node server.js",
+    "start": "npx cross-env NODE_ENV=production node server.js"
   },
   "author": "",
   "license": "ISC"

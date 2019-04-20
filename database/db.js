@@ -2,7 +2,9 @@ let MongoClient = require('mongodb').MongoClient;
 let config = require('./config')
 
 module.exports = {
+    client: null,
     getDB() {
+        
         return new Promise((resolve, reject) => {
             MongoClient.connect(config.host, {
                 useNewUrlParser: true
@@ -10,6 +12,7 @@ module.exports = {
                 if (err) {
                     reject(err);
                 } else {
+                    this.client = client;
                     resolve(client);
                 }
             })
@@ -26,6 +29,18 @@ module.exports = {
             })
         })
     },
+    updateDB(db, collection, query, update) {
+        return new Promise((resolve, reject) => {
+            db.collection(collection).updateOne(
+                query,
+                update,
+                {
+                    upsert: true,
+                    multi: false
+                }
+            )
+        })
+    },
     queryDB(db, collection, queryObj) {
         return new Promise((resolve, reject) => {
             db.collection(collection).find(queryObj).toArray((err, data) => {
@@ -36,5 +51,17 @@ module.exports = {
                 }
             })
         })
+    },
+    async updateUser(userId, content) {
+        let client = await this.getDB();
+        this.updateDB(client.db(config.dbName), 'user', {"user_id": userId}, {$set: content});
+    },
+    async getUser(userId) {
+        let client = await this.getDB();
+        this.queryDB(client.db(config.dbName), 'user', {"user_id": userId});
+    },
+    async updateReminder(userId, content) {
+        let client = await this.getDB();
+        this.updateDB(client.db(config.dbName), 'reminder', {"user_id": userId}, {$set: content});
     }
 }

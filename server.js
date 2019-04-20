@@ -16,7 +16,7 @@ let md5 = crypto.createHash('md5');
 
 let APP_ID = 'wx3a51bb26a21f32dd';
 let APP_SECRET = '251316c39ceb5d186ad63c3fa88d0fa0';
-let session = new Map(); //存储的是{session id(给用户): session key(后台)}的映射
+let session = new Map(); //存储的是{openid(给用户): session key(后台)}的映射
 
 cookieConfig = {
     domain: 'tony-space.top', // 写cookie所在的域名
@@ -56,12 +56,29 @@ app.use(async (ctx, next) => { //登陆操作
             result = await getWXUserInfo(ctx.query['code'])
         }
         if (!result['openid']) {
-            console.log('get user id error');
+            //console.log('get user id error');
             ctx.body = 'get user info error';
         } else {
-            console.log(result);
+            //console.log(result);
             let openId = result['openid'];
             session.set(openId, result['session_key'])
+            let userInfo = dbm.getUser(openId);
+            if (userInfo) {
+                dbm.updateUser(openId, {
+                    'last_login': (new Date()).toString()
+                })
+            } else {
+                dbm.updateUser(openId, {
+                    'user_id': openId,
+                    'name': openId,
+                    'last_login': (new Date()).toString(),
+                    'sign_up_time': (new Date()).toString(),
+                    'scholl': 'null',
+                    'grade': 'unknown',
+                    'week': 'unknown',
+                    'user_class': 'normal'
+                })
+            }
             ctx.body = `{"session_id": "${openId}"}`;
             ctx.type = 'application/json';
         }
@@ -79,18 +96,22 @@ app.use(async (ctx, next) => {
     }
 })
 
-router.get('/query/:dataName', async (ctx, next) => {
-    let client = await dbm.getDB();
-    let dbo = client.db(dbConfig.dbName)
-    let result = await dbm.queryDB(dbo, 'visualDataSet', {
-        'title': ctx.params.dataName
-    })
-    client.close();
-    ctx.type = 'application/json';
-    ctx.body = JSON.stringify(result);
+router.get('/addreminder', async (ctx, next) => {
+    if (!ctx.cookies.get('session_id')) {
+        ctx.response.status = 200;
+        ctx.body = 'you have not login';
+    } else {
+        let openId = ctx.cookies.get('session_id')
+        ctx.response.status = 201;
+        dbm.updateReminder(openId, {
+            'type': ctx.query['type'],
+            'title': ctx.query['title'],
+            'content': ctx.query['content'],
+            'set_time': +new Date(),
+            'remind_time': parseInt(ctx.query['time'])
+        })
+    }
 });
-
-
 
 app.use(router.routes());
 
