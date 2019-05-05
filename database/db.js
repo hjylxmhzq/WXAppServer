@@ -63,5 +63,10 @@ module.exports = {
     async updateReminder(userId, content) {
         let client = await this.getDB();
         this.updateDB(client.db(config.dbName), 'reminder', {"user_id": userId}, {$set: content});
+    },
+    async getReminder(userId) {
+        let client = await this.getDB();
+        let result = await this.queryDB(client.db(config.dbName), 'reminder', {"user_id": userId});
+        return result;
     }
 }

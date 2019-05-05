@@ -7,6 +7,10 @@ let config = require('./config');
 let dbConfig = require('./database/config');
 let request = require('request');
 let dbm = require('./database/db.js');
+let myrouter = require('./router/router.js');
+const bodyParser = require('koa-bodyparser')
+
+// 使用ctx.body解析中间件
 const app = new Koa();
 
 staticPath = './static';
@@ -42,6 +46,8 @@ function getWXUserInfo(jsCode) {
     })
 }
 //app.use(static(path.join(__dirname, staticPath)))
+
+app.use(bodyParser())
 
 app.use(async (ctx, next) => {
     console.log(`Process: ${ctx.request.method} ${ctx.request.url}`);
@@ -87,33 +93,7 @@ app.use(async (ctx, next) => { //登陆操作
     }
 })
 
-app.use(async (ctx, next) => {
-    let sessId = ctx.cookies.get('app:sess');
-    if (!sessId) {
-        ctx.body = 'authorization error';
-    } else {
-        await next();
-    }
-})
-
-router.get('/addreminder', async (ctx, next) => {
-    if (!ctx.cookies.get('session_id')) {
-        ctx.response.status = 200;
-        ctx.body = 'you have not login';
-    } else {
-        let openId = ctx.cookies.get('session_id')
-        ctx.response.status = 201;
-        dbm.updateReminder(openId, {
-            'type': ctx.query['type'],
-            'title': ctx.query['title'],
-            'content': ctx.query['content'],
-            'set_time': +new Date(),
-            'remind_time': parseInt(ctx.query['time'])
-        })
-    }
-});
-
-app.use(router.routes());
+app.use(myrouter.routes());
 
 app.listen(config.webport);
 console.log(`server is listening on port ${config.webport}`)
