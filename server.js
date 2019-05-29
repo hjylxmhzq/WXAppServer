@@ -30,7 +30,7 @@ cookieConfig = {
     expires: new Date(86400000 + (new Date()).valueOf()), // cookie失效时间
     httpOnly: false, // 是否只用于http请求中获取
     overwrite: false // 是否允许重写
-}
+};
 
 function getWXUserInfo(jsCode) {
     let url = `https://api.weixin.qq.com/sns/jscode2session?appid=${APP_ID}&secret=${APP_SECRET}&js_code=${jsCode}&grant_type=authorization_code`;
@@ -44,7 +44,7 @@ function getWXUserInfo(jsCode) {
                 resolve(body);
             }
         });
-    })
+    });
 }
 //app.use(static(path.join(__dirname, staticPath)))
 
@@ -60,7 +60,7 @@ app.use(async (ctx, next) => { //登陆操作
     if (ctx.path === '/login' && ctx.method === 'GET') {
         //console.log(ctx.query['code'])
         if (ctx.query['code']) {
-            result = await getWXUserInfo(ctx.query['code'])
+            result = await getWXUserInfo(ctx.query['code']);
         }
         if (!result['openid']) {
             //console.log('get user id error');
@@ -68,6 +68,7 @@ app.use(async (ctx, next) => { //登陆操作
         } else {
             //console.log(result);
             let openId = result['openid'];
+<<<<<<< HEAD
             session.set(openId, result['session_key'])
             let userInfo = dbm.getUser(openId);
             if (userInfo) {
@@ -86,13 +87,16 @@ app.use(async (ctx, next) => { //登陆操作
                     'user_class': 'normal'
                 })
             }
+=======
+            session.set(openId, result['session_key']);
+>>>>>>> 45f6ef7ee84f196436dbf704d080d32e6fad9a56
             ctx.body = `{"session_id": "${openId}"}`;
             ctx.type = 'application/json';
         }
     } else {
         await next();
     }
-})
+});
 
 function getAccessToken(callback) {
     let url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${APP_ID}&secret=${APP_SECRET}`;
@@ -101,6 +105,7 @@ function getAccessToken(callback) {
         }, callback);
     }
 
+<<<<<<< HEAD
 function setAccessToken(err, res, body) {
     AccessToken = body['access_token'];
 }
@@ -188,6 +193,18 @@ async function initMesg() {
         ctx.response.status = 200;
     }, 30000)
 }
+=======
+router.get('/query/:dataName', async (ctx, next) => {
+    let client = await dbm.getDB();
+    let dbo = client.db(dbConfig.dbName);
+    let result = await dbm.queryDB(dbo, 'visualDataSet', {
+        'title': ctx.params.dataName
+    });
+    client.close();
+    ctx.type = 'application/json';
+    ctx.body = JSON.stringify(result);
+});
+>>>>>>> 45f6ef7ee84f196436dbf704d080d32e6fad9a56
 
 initAccessTokenRefresh();
 
@@ -196,4 +213,4 @@ initMesg();
 app.use(myrouter.routes());
 
 app.listen(config.webport);
-console.log(`server is listening on port ${config.webport}`)
+console.log(`server is listening on port ${config.webport}`);

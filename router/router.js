@@ -1,10 +1,9 @@
 let Router = require('koa-router');
-let mime = require('mime')
+let mime = require('mime');
 let router = Router();
 let dbm = require('../database/db.js');
 
-staticPath = '../../static'
-
+staticPath = '../../static';
 
 router.post('/addreminder', async (ctx, next) => {
     console.log(ctx.cookies.get('app:sess'))

@@ -1,5 +1,5 @@
 let MongoClient = require('mongodb').MongoClient;
-let config = require('./config')
+let config = require('./config');
 
 module.exports = {
     client: null,
@@ -15,8 +15,8 @@ module.exports = {
                     this.client = client;
                     resolve(client);
                 }
-            })
-        })
+            });
+        });
     },
     insertDB(db, collection, obj) {
         return new Promise((resolve, reject) => {
@@ -26,8 +26,8 @@ module.exports = {
                 } else {
                     resolve(res);
                 }
-            })
-        })
+            });
+        });
     },
     updateDB(db, collection, query, update) {
         return new Promise((resolve, reject) => {
@@ -97,6 +97,6 @@ module.exports = {
     },
     async removeClass(uid) {
         let client = await this.getDB();
-        await this.removeDB(client.db(config.dbName), 'class', {"uniqueid": uid});
+        await this.removeDB(client.db(config.dbName), 'class', {"uniqueid": uid});5f6ef7ee84f196436dbf704d080d32e6fad9a56
     }
 }
